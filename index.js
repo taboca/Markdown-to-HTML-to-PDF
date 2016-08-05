@@ -76,11 +76,16 @@ function catToHTML(appPath, section, file) {
   var fullPath = path.join(__dirname, appPath, section, file);
   console.log("*="  + fullPath);
 
-
+  var blobFile = '';
   var lineReader = require('readline').createInterface({
     input: require('fs').createReadStream(fullPath)
   });
   lineReader.on('line', function (line) {
+    blobFile+=line;
+  });
+  lineReader.on('close', function (line) {
+    console.log(marked(blobFile));
+
   });
 
 }
