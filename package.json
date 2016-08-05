@@ -9,6 +9,7 @@
     "http-agent": "~0.1.2",
     "marked": "~0.3.6",
     "node-telegram-bot-api": "~0.21.1",
+    "phantomjs": "^2.1.7",
     "shelljs": "~0.7.2"
   },
   "devDependencies": {},
