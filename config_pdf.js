@@ -1,7 +1,5 @@
 var config = {
  
-  "directory": "/tmp",       // The directory the file gets written into if not using .toFile(filename, callback). default: '/tmp' 
- 
   "height": "10.5in",        // allowed units: mm, cm, in, px 
   "width": "8in",            // allowed units: mm, cm, in, px 
   "border": {

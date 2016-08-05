@@ -4,4 +4,4 @@
 
 This is nice 
 
-![image](design_epd.png)
+![image](design/design-epd.png)

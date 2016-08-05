@@ -5,7 +5,8 @@ var sys = require("sys"),
     config_pdf = require("./config_pdf.js"),
     shell = require('shelljs'),
     marked = require('marked'),
-    pdf = require('html-pdf');
+    cheerio = require('cheerio'),
+    pdf = require('html-pdf'),
     http = require("http");
 
 function init() {
@@ -28,7 +29,9 @@ function init() {
   parseIndex(indexPath, function (indexes) {
 
     var outFile = path.join(__dirname, 'output.pdf');
+    //config_pdf["base"] = 'file://' + path.join(__dirname, process.argv[2]);
 
+    console.log(JSON.stringify(config_pdf));
     var count = 0;
     for(var item in indexes) {
       console.log('=' + indexes[item]);
@@ -38,8 +41,15 @@ function init() {
       catToHTML(process.argv[2], userPath[0], userPath[1], function (result) {
         blobAll+=result;
         if(count==indexes.length-1) {
-          console.log('item ' + item + ' and output = ' + marked(blobAll));
-          pdf.create(marked(blobAll), config_pdf).toFile(outFile,function(err, res){
+          var $ = cheerio.load(marked(blobAll));
+          $('img').attr('style','width:100%;');
+          var src = $('img').attr('src');
+          src =  path.join(__dirname, process.argv[2], src);
+          $('img').attr('src','file://'+src);
+          blobAll = $.html();
+          console.log('item ' + item + ' and output = ' + blobAll);
+
+          pdf.create(blobAll, config_pdf).toFile(outFile,function(err, res){
             console.log(res.filename);
           });
         }
