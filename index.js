@@ -81,7 +81,7 @@ function catToHTML(appPath, section, file) {
     input: require('fs').createReadStream(fullPath)
   });
   lineReader.on('line', function (line) {
-    blobFile+=line;
+    blobFile+=line+"\n";
   });
   lineReader.on('close', function (line) {
     console.log(marked(blobFile));
