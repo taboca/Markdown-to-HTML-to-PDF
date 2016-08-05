@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "node-telegram-bot-api": "~0.21.1",
-    "http-agent": "~0.1.2",
-    "shelljs": "~0.7.2",
     "cheerio": "~0.20.0",
-    "marked": "~0.3.6"
+    "html-pdf": "^2.0.1",
+    "http-agent": "~0.1.2",
+    "marked": "~0.3.6",
+    "node-telegram-bot-api": "~0.21.1",
+    "shelljs": "~0.7.2"
   },
   "devDependencies": {},
   "scripts": {

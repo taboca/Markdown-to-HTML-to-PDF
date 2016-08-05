@@ -2,14 +2,16 @@ var sys = require("sys"),
     path = require("path"),
     fs = require("fs")
     url = require("url"),
-    config = require("./config.js"),
+    config_bot = require("./config_bot.js"),
+    config_pdf = require("./config_pdf.js"),
     shell = require('shelljs'),
     marked = require('marked'),
+    pdf = require('html-pdf');
     http = require("http");
 
 var TelegramBot = require('node-telegram-bot-api');
 
-var token = config.token;
+var token = config_bot.token;
 
 var bot = new TelegramBot(token, {polling: true});
 
@@ -59,10 +61,26 @@ function init() {
 
   parseIndex(indexPath, function (indexes) {
 
+    var outFile = path.join(__dirname, 'output.pdf');
+
+    var count = 0;
     for(var item in indexes) {
       console.log('=' + indexes[item]);
       var userPath = indexes[item].split('/');
-      catToHTML(process.argv[2], userPath[0], userPath[1]);
+      var blobAll = '';
+
+      catToHTML(process.argv[2], userPath[0], userPath[1], function (result) {
+
+        blobAll+=result;
+        if(count==indexes.length-1) {
+          console.log('item ' + item + ' and output = ' + marked(blobAll));
+          pdf.create(marked(blobAll), config_pdf).toFile(outFile,function(err, res){
+            console.log(res.filename);
+          });
+        }
+        count++;
+
+      });
     }
 
   });
@@ -71,21 +89,23 @@ function init() {
 
 init();
 
-function catToHTML(appPath, section, file) {
+function catToHTML(appPath, section, file, cb) {
 
   var fullPath = path.join(__dirname, appPath, section, file);
   console.log("*="  + fullPath);
 
   var blobFile = '';
+
   var lineReader = require('readline').createInterface({
     input: require('fs').createReadStream(fullPath)
   });
+
   lineReader.on('line', function (line) {
     blobFile+=line+"\n";
   });
-  lineReader.on('close', function (line) {
-    console.log(marked(blobFile));
 
+  lineReader.on('close', function (line) {
+    cb(blobFile);
   });
 
 }
