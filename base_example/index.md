@@ -1,3 +1,4 @@
 # Inovação e Criatividade
-design/index.md
+design/epd.md
+design/when.md
 footer/index.md

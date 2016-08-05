@@ -37,18 +37,27 @@ function init() {
       console.log('=' + indexes[item]);
       var userPath = indexes[item].split('/');
       var blobAll = '';
+      var sections = new Array();
 
-      catToHTML(process.argv[2], userPath[0], userPath[1], function (result) {
-        blobAll+=result;
-        if(count==indexes.length-1) {
-          var $ = cheerio.load(marked(blobAll));
+      catToHTML(process.argv[2], userPath[0], userPath[1], item, function (result, item) {
+
+        var $ = cheerio.load(marked(result));
+
+        if($('img').length>0) {
           $('img').attr('style','width:100%;');
           var src = $('img').attr('src');
           src =  path.join(__dirname, process.argv[2], src);
           $('img').attr('src','file://'+src);
-          blobAll = $.html();
-          console.log('item ' + item + ' and output = ' + blobAll);
+        }
+        result = $.html();
 
+        sections[item] = result;
+        console.log('item ' + item + ' and output = ' + result);
+        /* At the end */
+        if(count==indexes.length-1) {
+          for(var j=0;j<sections.length;j++) {
+            blobAll+=sections[j];
+          }
           pdf.create(blobAll, config_pdf).toFile(outFile,function(err, res){
             console.log(res.filename);
           });
@@ -59,7 +68,7 @@ function init() {
   });
 }
 
-function catToHTML(appPath, section, file, cb) {
+function catToHTML(appPath, section, file, item, cb) {
   var fullPath = path.join(__dirname, appPath, section, file);
   var blobFile = '';
   var lineReader = require('readline').createInterface({
@@ -69,7 +78,7 @@ function catToHTML(appPath, section, file, cb) {
     blobFile+=line+"\n";
   });
   lineReader.on('close', function (line) {
-    cb(blobFile);
+    cb(blobFile, item);
   });
 }
 
