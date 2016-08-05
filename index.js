@@ -2,45 +2,11 @@ var sys = require("sys"),
     path = require("path"),
     fs = require("fs")
     url = require("url"),
-    config_bot = require("./config_bot.js"),
     config_pdf = require("./config_pdf.js"),
     shell = require('shelljs'),
     marked = require('marked'),
     pdf = require('html-pdf');
     http = require("http");
-
-var TelegramBot = require('node-telegram-bot-api');
-
-var token = config_bot.token;
-
-var bot = new TelegramBot(token, {polling: true});
-
-// Matches /echo [whatever]
-bot.onText(/\/echo (.+)/, function (msg, match) {
-  var fromId = msg.from.id;
-  var resp = match[1];
-  bot.sendMessage(fromId, resp);
-});
-
-// Any kind of message
-bot.on('message', function (msg) {
-  var chatId = msg.chat.id;
-  var fromId = msg.from.id;
-  // photo can be: a file path, a stream or a Telegram file_id
-  //var photo = 'image.png';
-  //console.log(msg);
-  if(msg.text.indexOf('ls')>-1) {
- 	shell.ls('*').forEach(function(file) {
-          bot.sendMessage(fromId, file);
-        });
-  }
-  if(msg.text.indexOf('cd')>-1) {
-	var par2 = msg.text.split('cd')[1];
- 	shell.cd(par2);
-        bot.sendMessage(fromId, 'ok');
-  }
-
-});
 
 function init() {
 
@@ -70,7 +36,6 @@ function init() {
       var blobAll = '';
 
       catToHTML(process.argv[2], userPath[0], userPath[1], function (result) {
-
         blobAll+=result;
         if(count==indexes.length-1) {
           console.log('item ' + item + ' and output = ' + marked(blobAll));
@@ -79,35 +44,23 @@ function init() {
           });
         }
         count++;
-
       });
     }
-
   });
-
 }
 
-init();
-
 function catToHTML(appPath, section, file, cb) {
-
   var fullPath = path.join(__dirname, appPath, section, file);
-  console.log("*="  + fullPath);
-
   var blobFile = '';
-
   var lineReader = require('readline').createInterface({
     input: require('fs').createReadStream(fullPath)
   });
-
   lineReader.on('line', function (line) {
     blobFile+=line+"\n";
   });
-
   lineReader.on('close', function (line) {
     cb(blobFile);
   });
-
 }
 
 function parseIndex(fullPath, callBack) {
@@ -134,5 +87,6 @@ function parseIndex(fullPath, callBack) {
     callBack(indexes);
   });
 
-
 }
+
+init();
