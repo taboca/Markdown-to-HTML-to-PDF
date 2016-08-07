@@ -1,3 +1,0 @@
-## Conclusões
-
-* Considerações finais

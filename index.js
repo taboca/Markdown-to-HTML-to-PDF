@@ -7,11 +7,14 @@ var sys = require("sys"),
     marked = require('marked'),
     cheerio = require('cheerio'),
     pdf = require('html-pdf'),
+    traverse = require('./traverseJSON.js'),
     http = require("http");
 
 function init() {
 
-  var indexPath = path.join(__dirname, process.argv[2], "index.md");
+  var indexPath = path.join(__dirname, process.argv[2], 'index.txt');
+
+  var parsedTree = traverse.init(process.argv[2]);
 
   console.log("Parsing .. " + indexPath);
 
@@ -44,7 +47,7 @@ function init() {
         var $ = cheerio.load(marked(result));
 
         if($('img').length>0) {
-          $('img').attr('style','width:100%;');
+          $('img').attr('style','width:100%; border:1px solid blue; page-break-before: always');
           var src = $('img').attr('src');
           src =  path.join(__dirname, process.argv[2], src);
           $('img').attr('src','file://'+src);
